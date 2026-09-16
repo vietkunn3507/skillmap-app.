@@ -40,5 +40,10 @@
   "type": "module",
   "engines": {
     "node": ">=24.0.0"
+  },
+  "pnpm": {
+    "onlyBuiltDependencies": [
+      "esbuild"
+    ]
   }
 }
