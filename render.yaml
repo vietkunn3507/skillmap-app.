@@ -2,13 +2,9 @@ services:
   - type: web
     name: skillmap-app
     runtime: docker
-    plan: 0.5c-512mb
+    plan: free
     region: singapore
     healthCheckPath: /login
-    disk:
-      name: skillmap-profiles
-      mountPath: /var/data
-      sizeGB: 1
     envVars:
       - key: BETTER_AUTH_SECRET
         generateValue: true
@@ -23,4 +19,4 @@ services:
       - key: DEMO_PASSWORD
         generateValue: true
       - key: AUTH_DB_PATH
-        value: /var/data/skillmap.sqlite
+        value: skillmap.sqlite
