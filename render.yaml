@@ -1,0 +1,26 @@
+services:
+  - type: web
+    name: skillmap-app
+    runtime: docker
+    plan: 0.5c-512mb
+    region: singapore
+    healthCheckPath: /login
+    disk:
+      name: skillmap-profiles
+      mountPath: /var/data
+      sizeGB: 1
+    envVars:
+      - key: BETTER_AUTH_SECRET
+        generateValue: true
+      - key: GEMINI_API_KEY
+        sync: false
+      - key: GEMINI_MODEL
+        value: gemini-3.5-flash-lite
+      - key: DEMO_ENABLED
+        value: "true"
+      - key: DEMO_EMAIL
+        value: phuong@demo.skillmap.invalid
+      - key: DEMO_PASSWORD
+        generateValue: true
+      - key: AUTH_DB_PATH
+        value: /var/data/skillmap.sqlite

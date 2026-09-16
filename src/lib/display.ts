@@ -1,0 +1,196 @@
+// Display-only normalization: API keys and persisted raw values are never rewritten.
+export function skillKey(value: string) {
+  return value
+    .normalize("NFD")
+    .replace(/[\u0300-\u036f]/g, "")
+    .replace(/đ/g, "d")
+    .replace(/Đ/g, "D")
+    .toLowerCase()
+    .replace(/[_–—-]+/g, " ")
+    .replace(/[^a-z0-9+#/. ]/g, " ")
+    .replace(/\s+/g, " ")
+    .trim();
+}
+const labels: Record<string, string> = {
+  "ci/cd": "CI/CD",
+  "ui/ux": "UI/UX",
+  "asp.net": "ASP.NET",
+  "c/c++": "C/C++",
+  json: "JSON",
+  jquery: "jQuery",
+  php: "PHP",
+  misa: "MISA",
+  nextjs: "Next.js",
+  vuejs: "Vue.js",
+  tensorflow: "TensorFlow",
+  wordpress: "WordPress",
+  websocket: "WebSocket",
+  "rest api": "REST API",
+  "web api": "Web API",
+  "net core": ".NET Core",
+  "sql server": "SQL Server",
+  "nosql db khac": "Cơ sở dữ liệu NoSQL khác",
+  bhxh: "BHXH",
+  gtgt: "GTGT",
+  tndn: "TNDN",
+  lan: "LAN",
+  amis: "AMIS",
+  csdl: "CSDL",
+  jira: "Jira",
+  "excel nang cao pivot table": "Excel nâng cao · PivotTable",
+  "excel cao cap": "Excel nâng cao",
+  "fast accounting": "FAST Accounting",
+  "va network security": "Bảo mật mạng",
+  "ve so do usecase": "Vẽ sơ đồ use case",
+  word: "Word",
+  microsoft: "Microsoft",
+  "google cloud": "Google Cloud",
+  "spring boot": "Spring Boot",
+  "computer vision": "Computer Vision",
+  "machine learning": "Machine Learning",
+  golang: "Go",
+  linux: "Linux",
+  django: "Django",
+  bootstrap: "Bootstrap",
+  flutter: "Flutter",
+  oracle: "Oracle",
+  elasticsearch: "Elasticsearch",
+  kafka: "Kafka",
+  terraform: "Terraform",
+  swift: "Swift",
+  hibernate: "Hibernate",
+  unity: "Unity",
+  angular: "Angular",
+
+  api: "API",
+  sql: "SQL",
+  etl: "ETL",
+  ai: "AI",
+  ml: "ML",
+  nlp: "NLP",
+  erp: "ERP",
+  crm: "CRM",
+  aws: "AWS",
+  gcp: "GCP",
+  html: "HTML",
+  css: "CSS",
+  javascript: "JavaScript",
+  typescript: "TypeScript",
+  "power bi": "Power BI",
+  excel: "Excel",
+  git: "Git",
+  github: "GitHub",
+  python: "Python",
+  java: "Java",
+  "c#": "C#",
+  "c++": "C++",
+  react: "React",
+  reactjs: "React",
+  "node.js": "Node.js",
+  nodejs: "Node.js",
+  vue: "Vue",
+  docker: "Docker",
+  kubernetes: "Kubernetes",
+  postgresql: "PostgreSQL",
+  mysql: "MySQL",
+  mongodb: "MongoDB",
+  fastapi: "FastAPI",
+  figma: "Figma",
+  tableau: "Tableau",
+  agile: "Agile",
+  scrum: "Scrum",
+  devops: "DevOps",
+  photoshop: "Photoshop",
+  illustrator: "Illustrator",
+  english: "Tiếng Anh",
+  accounting: "Kế toán",
+  "financial analysis": "Phân tích tài chính",
+  "financial modeling": "Mô hình hóa tài chính",
+  "financial reporting": "Lập báo cáo tài chính",
+  "lap bctc": "Lập báo cáo tài chính",
+  "lap bao cao tai chinh": "Lập báo cáo tài chính",
+  "internal control": "Kiểm soát nội bộ",
+  "internal controls": "Kiểm soát nội bộ",
+  "risk assessment": "Đánh giá rủi ro",
+  "document verification": "Kiểm tra chứng từ",
+  "financial statement auditing": "Kiểm toán báo cáo tài chính",
+  reconciliation: "Đối chiếu số liệu",
+  "tax accounting": "Kế toán thuế",
+  bookkeeping: "Hạch toán kế toán",
+  "viet tai lieu": "Viết tài liệu",
+  "tai lieu": "Tài liệu",
+  "tu duy lap trinh tot": "Tư duy lập trình tốt",
+  "tu duy lap trinh": "Tư duy lập trình",
+  "lap trinh": "Lập trình",
+  "phan tich du lieu": "Phân tích dữ liệu",
+  "giao tiep": "Giao tiếp",
+  "lap bao cao": "Lập báo cáo",
+  "bao cao tai chinh": "Lập báo cáo tài chính",
+  "tieng anh": "Tiếng Anh",
+  "ke toan": "Kế toán",
+  "tai chinh": "Tài chính",
+  "xu ly du lieu": "Xử lý dữ liệu",
+  "cac san pham": "Các sản phẩm",
+  "kien thuc cloud": "Kiến thức Cloud",
+  "phat trien phan mem": "Phát triển phần mềm",
+  "kiem thu mobile": "Kiểm thử ứng dụng di động",
+  "kiem thu phan mem": "Kiểm thử phần mềm",
+  "thiet ke csdl": "Thiết kế CSDL",
+  "phan tich yeu cau": "Phân tích yêu cầu",
+  "kha nang lam viec doc lap": "Khả năng làm việc độc lập",
+  "lam viec nhom": "Làm việc nhóm",
+  "quan ly du an": "Quản lý dự án",
+  "he dieu hanh windows": "Hệ điều hành Windows",
+  "che do ke toan": "Chế độ kế toán",
+  "cong no": "Công nợ",
+  "tong hop du lieu": "Tổng hợp dữ liệu",
+  "phan tich doanh thu": "Phân tích doanh thu",
+  "lam dashboard": "Làm dashboard",
+  "phan tich bao cao tai chinh": "Phân tích báo cáo tài chính",
+};
+function sentence(value: string) {
+  const cleaned = value.replace(/[_]+/g, " ").replace(/\s+/g, " ").trim();
+  if (!cleaned) return "Chưa có thông tin";
+  let text = cleaned.toLocaleLowerCase("vi");
+  text = text.charAt(0).toLocaleUpperCase("vi") + text.slice(1);
+  return text.replace(
+    /\b[a-z][a-z0-9+#/.]*\b/gi,
+    (word) => labels[skillKey(word)] || word,
+  );
+}
+export function formatSkillLabel(raw: string) {
+  const key = skillKey(raw);
+  return labels[key] || sentence(raw);
+}
+const occupations: Record<string, string> = {
+  "financial analyst": "Financial Analyst",
+  "business analyst": "Business Analyst",
+  "data analyst": "Data Analyst",
+  "data engineer": "Data Engineer",
+  "data scientist": "Data Scientist",
+  "lap trinh vien": "Lập trình viên",
+  "ky su du lieu": "Kỹ sư dữ liệu",
+  "chuyen vien phan tich du lieu": "Chuyên viên phân tích dữ liệu",
+  "ke toan tong hop": "Kế toán tổng hợp",
+};
+export function formatOccupationLabel(raw: string) {
+  return occupations[skillKey(raw)] || sentence(raw);
+}
+const locations: Record<string, string> = {
+  "ha noi": "Hà Nội",
+  hanoi: "Hà Nội",
+  "ho chi minh": "TP. Hồ Chí Minh",
+  "tp.hcm": "TP. Hồ Chí Minh",
+  "tp hcm": "TP. Hồ Chí Minh",
+  hcm: "TP. Hồ Chí Minh",
+  hcmc: "TP. Hồ Chí Minh",
+  "da nang": "Đà Nẵng",
+  "hai phong": "Hải Phòng",
+  "can tho": "Cần Thơ",
+  remote: "Làm việc từ xa",
+  "ba ria vung tau": "Bà Rịa – Vũng Tàu",
+  "toan quoc": "Toàn quốc",
+};
+export function formatLocationLabel(raw: string) {
+  return locations[skillKey(raw)] || sentence(raw);
+}

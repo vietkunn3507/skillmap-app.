@@ -1,0 +1,44 @@
+{
+  "name": "skillmap-frontend",
+  "version": "1.0.0",
+  "private": true,
+  "scripts": {
+    "dev": "next dev --hostname 0.0.0.0",
+    "build": "next build",
+    "start": "next start --hostname 0.0.0.0",
+    "typecheck": "tsc --noEmit",
+    "test": "node --experimental-transform-types --test tests/*.test.ts",
+    "test:browser": "node tests/browser.mjs",
+    "test:states": "node tests/states.mjs",
+    "auth:init": "node --env-file=.env.local --experimental-transform-types scripts/init-auth.mts",
+    "demo:seed": "node --env-file=.env.local --experimental-transform-types scripts/seed-demo.mts",
+    "demo:reset": "node --env-file=.env.local --experimental-transform-types scripts/reset-demo.mts",
+    "test:revision": "node tests/revision.mjs"
+  },
+  "dependencies": {
+    "better-auth": "^1.7.4",
+    "d3-geo": "^3.1.1",
+    "lucide-react": "^0.577.0",
+    "mammoth": "^1.12.2",
+    "next": "^16.3.5",
+    "nodemailer": "^10.0.8",
+    "pdf-parse": "^2.4.5",
+    "react": "^19.2.0",
+    "react-dom": "^19.2.0"
+  },
+  "devDependencies": {
+    "@playwright/test": "^1.58.0",
+    "@types/d3-geo": "^3.1.1",
+    "@types/node": "^22.0.0",
+    "@types/nodemailer": "^8.0.1",
+    "@types/react": "^19.0.0",
+    "@types/react-dom": "^19.0.0",
+    "prettier": "3.6.2",
+    "tsx": "^4.20.0",
+    "typescript": "^5.9.3"
+  },
+  "type": "module",
+  "engines": {
+    "node": ">=24.0.0"
+  }
+}
