@@ -7,7 +7,7 @@ test("normalization unions job evidence for aliases, never sums duplicated posti
  const cleaned=cleanOccupations(raw);assert.equal(cleaned.occupations[0].skills.length,1);assert.equal(cleaned.occupations[0].skills[0].job_ids.length,3);
 });
 test("growth preserves percentage point observations and drops malformed labels",()=>{
- const base={start_share:10,end_share:15,change_pp:5,start_mentions:10,end_mentions:30,start_postings:100,end_postings:200};
+ const base={start_share:10,end_share:15,change_pp:5,start_mentions:10,end_mentions:30,start_postings:100,end_postings:200,p_value:0.01,significant:true};
  const result=cleanGrowth({start:2023,end:2025,years:[2023,2025],source:"test",method:"test",skills:[{...base,skill:"Excel"},{...base,skill:"Lưu ký năng"}]});assert.equal(result.skills.length,1);assert.equal(result.skills[0].change_pp,5);
 });
 test("what-if coverage increases only from evidence skills; unrelated skills do nothing",()=>{
@@ -15,6 +15,12 @@ test("what-if coverage increases only from evidence skills; unrelated skills do 
 });
 test("priority excludes held skills and does not fabricate missing trend observations",()=>{
  const roles=[role("Data Analyst",["Excel","SQL"])];const ranked=priorities(roles,[],["Excel"],roles[0]);assert.equal(ranked.length,1);assert.equal(ranked[0].skill,"SQL");assert.equal(ranked[0].change_pp,undefined);assert.equal(ranked[0].trend,0);assert.ok(ranked[0].score<=100);
+});
+test("priority ignores growth that is not statistically significant, even when the raw change is large",()=>{
+ const roles=[role("Data Analyst",["Excel","SQL"])];
+ const noisyGrowth=[{skill:"SQL",start_share:1,end_share:9,change_pp:8,start_mentions:1,end_mentions:9,start_postings:100,end_postings:100,p_value:0.4,significant:false}];
+ const ranked=priorities(roles,noisyGrowth,["Excel"],roles[0]);
+ assert.equal(ranked[0].skill,"SQL");assert.equal(ranked[0].growth_state,"not_significant");assert.equal(ranked[0].change_pp,undefined);assert.equal(ranked[0].trend,0);
 });
 test("Dijkstra discovers a real intermediate node and rejects disconnected occupations",()=>{
  const a=role("Accountant",["Excel","Accounting"]),b=role("Business Analyst",["Excel","Accounting","SQL","Power BI"]),c=role("Data Analyst",["SQL","Power BI"]),d=role("Java Engineer",["Java"]);
