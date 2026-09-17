@@ -5,7 +5,7 @@
   "scripts": {
     "dev": "next dev --hostname 0.0.0.0",
     "build": "next build",
-    "start": "next start --hostname 0.0.0.0",
+    "start": "echo y | npx auth migrate && next start --hostname 0.0.0.0",
     "typecheck": "tsc --noEmit",
     "test": "node --experimental-transform-types --test tests/*.test.ts",
     "test:browser": "node tests/browser.mjs",
