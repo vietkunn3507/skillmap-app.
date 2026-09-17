@@ -2,6 +2,8 @@
 import os
 import sqlite3
 from fastapi import APIRouter, HTTPException, Query
+from scipy.stats import chi2_contingency, fisher_exact
+import numpy as np
 
 router = APIRouter(prefix="/api")
 
@@ -18,6 +20,18 @@ def check(industry):
     if industry not in ("it_data", "ke_toan_tai_chinh"):
         raise HTTPException(422, "Ngành không hợp lệ")
 
+def significance(x1, n1, x2, n2):
+    """Kiem dinh 2 ty le doc lap (chi-square, chuyen Fisher khi ky vong < 5).
+    Tra ve (p_value, significant o muc 5%)."""
+    table = [[x1, n1 - x1], [x2, n2 - x2]]
+    try:
+        chi2, p, _, expected = chi2_contingency(table)
+        if (np.array(expected) < 5).any():
+            _, p = fisher_exact(table)
+    except ValueError:
+        return None, False
+    return round(float(p), 4), bool(p < 0.05)
+
 @router.get("/skills/growth")
 def growth(industry: str, start: int = Query(2023, ge=2000, le=2100), end: int = Query(2025, ge=2000, le=2100)):
     check(industry)
@@ -32,8 +46,17 @@ def growth(industry: str, start: int = Query(2023, ge=2000, le=2100), end: int =
         ON a.industry=b.industry AND a.skill_canonical=b.skill_canonical
         WHERE a.industry=? AND a.year=? AND b.year=?
         ORDER BY change_pp DESC, a.skill_canonical""", (industry, start, end))
+    for row in data:
+        p, sig = significance(row["start_mentions"], row["start_postings"],
+                               row["end_mentions"], row["end_postings"])
+        row["p_value"] = p
+        row["significant"] = sig
     return {"industry": industry, "start": start, "end": end, "years": years, "skills": data,
-        "source": "TopCV · skill_trend_yearly", "method": "change_pp = share_pct cuối kỳ − đầu kỳ. Chỉ so sánh kỹ năng có quan sát ở cả hai năm; không điền 0 cho dữ liệu thiếu."}
+        "source": "TopCV · skill_trend_yearly",
+        "method": "change_pp = share_pct cuối kỳ − đầu kỳ. Chỉ so sánh kỹ năng có quan sát ở cả hai năm; "
+                  "không điền 0 cho dữ liệu thiếu. significant = kiểm định chi-square (Fisher khi kỳ vọng "
+                  "< 5) đạt p < 0.05; change_pp ở kỹ năng không đạt ý nghĩa nên xem là dao động ngẫu nhiên, "
+                  "không phải xu hướng thật."}
 
 @router.get("/intelligence/occupations")
 def occupations(industry: str):
