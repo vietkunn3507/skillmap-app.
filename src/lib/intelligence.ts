@@ -1,5 +1,5 @@
 import { normalizeEntity, skillKey } from "./taxonomy.ts";
-export type GrowthRow = { skill: string; start_share: number; end_share: number; change_pp: number; start_mentions: number; end_mentions: number; start_postings: number; end_postings: number };
+export type GrowthRow = { skill: string; start_share: number; end_share: number; change_pp: number; start_mentions: number; end_mentions: number; start_postings: number; end_postings: number; p_value: number | null; significant: boolean };
 export type GrowthData = { start: number; end: number; years: number[]; skills: GrowthRow[]; source: string; method: string };
 export type Occupation = { title: string; n_jobs: number; years: { year: number; n_jobs: number }[]; skills: { label: string; job_ids: number[] }[] };
 export type IntelligenceData = { occupations: Occupation[]; total_jobs: number; regions: {label: string; n_jobs: number}[]; seniority: {label: string; n_jobs: number}[]; source: string; method: string };
@@ -33,12 +33,16 @@ export function coverage(occupation: Occupation, skills: string[]) {
 export function priorities(occupations: Occupation[], growth: GrowthRow[], current: string[], target?: Occupation) {
   const have=new Set(current.map(key)), pool=new Map<string,{skill:string; ids:Set<number>; roles:number}>();
   for(const o of occupations)for(const s of o.skills){ const k=key(s.label);if(have.has(k))continue;const r=pool.get(k)||{skill:s.label,ids:new Set<number>(),roles:0};s.job_ids.forEach(id=>r.ids.add(id));r.roles++;pool.set(k,r); }
-  const maxJobs=Math.max(1,...[...pool.values()].map(s=>s.ids.size)), maxGrowth=Math.max(1,...growth.map(s=>s.change_pp));
+  const sigGrowth = growth.filter(g => g.significant);
+  const maxJobs=Math.max(1,...[...pool.values()].map(s=>s.ids.size)), maxGrowth=Math.max(1,...sigGrowth.map(s=>s.change_pp));
   return [...pool.values()].map(s=>{
-    const delta=growth.find(g=>key(g.skill)===key(s.skill))?.change_pp;
+    const growthRow=growth.find(g=>key(g.skill)===key(s.skill));
+    const delta=growthRow?.significant ? growthRow.change_pp : undefined;
     const relevant=target?.skills.some(t=>key(t.label)===key(s.skill))||false;
     const popularity=40*s.ids.size/maxJobs, goal=relevant?30:0, trend=20*Math.max(0,delta||0)/maxGrowth, breadth=10*s.roles/Math.max(1,occupations.length);
-    return {skill:s.skill, n_jobs:s.ids.size,roles:s.roles, change_pp:delta, relevant, score:Math.round(popularity+goal+trend+breadth), popularity,goal,trend,breadth};
+    return {skill:s.skill, n_jobs:s.ids.size,roles:s.roles, change_pp:delta, relevant,
+      growth_state: !growthRow ? "no_data" : growthRow.significant ? "significant" : "not_significant",
+      score:Math.round(popularity+goal+trend+breadth), popularity,goal,trend,breadth};
   }).sort((a,b)=>b.score-a.score||a.skill.localeCompare(b.skill));
 }
 export function transitionPath(occupations: Occupation[], from: string, to: string, excluded: string[]=[]): Occupation[] {
