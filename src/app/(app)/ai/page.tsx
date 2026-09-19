@@ -1,4 +1,5 @@
 "use client";
+import { AnswerText } from "@/components/mapi/answer-text";
 import Link from "next/link";
 import { useResource } from "@/lib/use-resource";
 import { useEffect, useRef, useState, Suspense } from "react";
@@ -149,7 +150,7 @@ function MapiPage() {
         body: JSON.stringify({
           question,
           context: ctx || undefined,
-          history: turns.slice(-4).map((turn) => turn.question),
+          history: turns.filter(turn => turn.reply).slice(-4).map(turn => ({ question: turn.question, answer: turn.reply!.text.slice(0, 12000) })),
         }),
         signal: abort.signal,
       });
@@ -186,7 +187,7 @@ function MapiPage() {
   useEffect(() => {
     const question = params.get("q");
     const key = params.toString();
-    if (!question || question.length > 600 || consumed.current === key) return;
+    if (!question || question.length > 2000 || consumed.current === key) return;
     const kind = params.get("context");
     const value = params.get("value");
     const ctx =
@@ -252,16 +253,14 @@ function MapiPage() {
           <div className="mapi-welcome-illustration">
             <div className="mapi-orbit-ring" />
             <Mapi state="greeting" size={142} />
-            <span className="mapi-orbit-tag">Kỹ năng → Cơ hội</span>
+            
           </div>
-          <span className="eyebrow">CÙNG BẠN TÌM BƯỚC TIẾP THEO</span>
+          
           <h2>
             Chào {profile.name || "bạn"},<br />
             hôm nay mình có thể giúp gì?
           </h2>
-          <p className="mapi-welcome-copy">
-            Từ kỹ năng bạn đang có đến hướng đi bạn muốn.
-          </p>
+          
           <div className="mapi-suggestions" aria-label="Câu hỏi gợi ý">
             {suggestions.map((question, i) => (
               <button
@@ -323,7 +322,7 @@ function MapiPage() {
             {turns.map((turn, i) => (
               <article className="mapi-turn" key={turn.id}>
                 <div className="mapi-user-question">
-                  <span>BẠN MUỐN BIẾT</span>
+                  
                   <h2>{turn.question}</h2>
                 </div>
                 {turn.reply ? (
@@ -332,13 +331,13 @@ function MapiPage() {
                       <Mapi state={turn.reply.state} size={58} />
                       <div>
                         <span className="mapi-signature">Mapi</span>
-                        <p>{turn.reply.text}</p>
+                        <AnswerText text={turn.reply.text} />
                       </div>
                     </div>
                     {turn.reply.cards.map((card, j) => (
                       <EvidenceCard key={j} card={card} />
                     ))}
-                    {turn.reply.citations && (
+                    {!!turn.reply.citations?.length && (
                       <div className="mapi-sources" aria-label="Nguồn trả lời">
                         <strong>Nguồn đã truy xuất</strong>
                         {turn.reply.citations.map((source) => (
@@ -407,7 +406,7 @@ function MapiPage() {
               ref={composer}
               placeholder="Hỏi Mapi về bước tiếp theo của bạn…"
               value={draft}
-              maxLength={600}
+              maxLength={2000}
               rows={2}
               onChange={(e) => setDraft(e.target.value)}
               onKeyDown={(e) => {
@@ -441,8 +440,8 @@ function MapiPage() {
             )}
           </form>
           <div className="mapi-composer-foot">
-            <span>Đi cùng bạn, từ một câu hỏi nhỏ.</span>
-            <span>{draft.length}/600</span>
+            
+            <span>{draft.length}/2000</span>
           </div>
         </section>
       </div>

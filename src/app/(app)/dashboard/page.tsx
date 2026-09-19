@@ -1,5 +1,6 @@
 "use client";
 import Link from "next/link";
+import { DevelopmentJourney, MarketLearningBridge } from "@/components/development-journey";
 import { ProfileAvatar } from "@/components/profile-avatar";
 import { Mapi } from "@/components/mapi/mascot";
 import { HomeMapiInsight } from "@/components/mapi/home-insight";
@@ -29,6 +30,7 @@ export default function Home() {
   );
   return (
     <div className="dashboard-grid">
+      <DevelopmentJourney />
       <section className="greeting dashboard-greeting home-personal-greeting">
         <div>
           <div className="home-name-row">
@@ -80,6 +82,7 @@ export default function Home() {
           />
         </DataState>
         <HomeMapiInsight />
+        <MarketLearningBridge />
       </section>
       <section className="dashboard-market">
         <SectionTitle

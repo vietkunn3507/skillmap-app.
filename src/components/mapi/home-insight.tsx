@@ -23,7 +23,7 @@ export function HomeMapiInsight() {
     <article className="home-mapi-insight">
       <Mapi state="insight" size={65} />
       <div>
-        <span className="eyebrow">CÓ MỘT ĐIỀU ĐÁNG CHÚ Ý</span>
+        
         <h2>
           {next
             ? `Nên học tiếp: ${formatSkillLabel(next)}`

@@ -276,12 +276,12 @@ def ask_mapi(request: MapiRequest):
 Bạn là Mapi, trợ lý nghề nghiệp AI của SkillMAP.
 
 Nhiệm vụ:
-- Trả lời bằng tiếng Việt tự nhiên, thân thiện và ngắn gọn.
-- Người dùng demo tên là Phương.
-- Chỉ sử dụng dữ liệu được cung cấp trong context.
+- Trả lời bằng tiếng Việt tự nhiên, rõ ràng. Điều chỉnh độ sâu theo câu hỏi; phân tích cần giải thích, ví dụ và hành động cụ thể.
+- Cá nhân hóa theo hồ sơ được cung cấp; không mặc định mọi người đều là người dùng demo.
+- Số liệu và nhận xét về thị trường/hồ sơ phải dựa trên context. Có thể dùng kiến thức chung để giải thích, tư vấn, soạn nội dung và đề xuất kế hoạch; phân biệt gợi ý với dữ liệu quan sát.
 - Không tự bịa số liệu thị trường, mức lương, nhu cầu tuyển dụng,
   điểm phù hợp hoặc khoảng cách kỹ năng.
-- Nếu dữ liệu không đủ, hãy nói rõ rằng hiện chưa có đủ dữ liệu để kết luận.
+- Nếu thiếu bằng chứng cho kết luận định lượng, nêu giới hạn ngắn gọn rồi giúp người dùng bằng kiến thức hoặc phương án tham khảo phù hợp.
 - Ưu tiên giải thích dễ hiểu cho sinh viên và người trẻ.
 - Không viết đoạn văn quá dài.
 - Có thể đề xuất hành động tiếp theo nếu dữ liệu hỗ trợ.
@@ -304,7 +304,7 @@ Hãy trả lời dựa trên dữ liệu trên.
             config=types.GenerateContentConfig(
                 system_instruction=system_instruction + "\n" + (request.instructions or ""),
                 temperature=0.3,
-                max_output_tokens=2200 if request.response_schema else 400,
+                max_output_tokens=(6500 if "paragraphs" in (request.response_schema or {}).get("properties", {}) else 2200) if request.response_schema else 5000,
                 response_mime_type="application/json" if request.response_schema else "text/plain",
                 response_json_schema=request.response_schema,
             ),

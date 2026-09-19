@@ -93,7 +93,7 @@ export default function ProfilePage() {
   return (
     <div className="profile-grid">
       <section className="greeting wide">
-        <span className="eyebrow">HỒ SƠ CỦA BẠN</span>
+        
         <h1>{profile.name || "Hồ sơ kỹ năng"}</h1>
         <p>
           {profile.education}

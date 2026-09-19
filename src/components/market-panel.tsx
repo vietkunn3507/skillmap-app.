@@ -95,11 +95,11 @@ export function MarketPanel({ industry, showGrowth = true }: { industry: Industr
                 label={formatSkillLabel(selected.skill)}
               />
             )}
-            <p className="source">
+            <details className="data-method"><summary>Nguồn & cách tính</summary><p className="source">
               Nguồn: dữ liệu tuyển dụng {industryName(industry)}. Không phải dự
               báo tăng trưởng. Nhãn đồng nghĩa dùng một chuỗi nguồn đại diện,
               không cộng gộp.
-            </p>
+            </p></details>
           </div>
         </DataState>
       </section>
@@ -124,13 +124,13 @@ export function MarketPanel({ industry, showGrowth = true }: { industry: Industr
         </div>
         <DataState {...gradient} empty={gradient.data?.skills.length === 0}>
           <div className="card">
-            <p className="source">
+            <details className="data-method"><summary>Nguồn & cách tính</summary><p className="source">
               Nguồn: VietJobs. SGI được API lưu ở trường SEI: tỷ trọng nhóm 0–3
               năm / tỷ trọng nhóm trên 3 năm. Lớn hơn 1 nghiêng về người mới,
               nhỏ hơn 1 nghiêng về lâu năm; không phải tăng trưởng theo năm.
               Nhãn nguồn đã được chuẩn hóa, không cộng số liệu giữa các nhãn
               đồng nghĩa.
-            </p>
+            </p></details>
             <div className="table-scroll">
               <table>
                 <thead>

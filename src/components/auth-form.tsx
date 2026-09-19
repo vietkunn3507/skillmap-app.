@@ -91,7 +91,7 @@ export function AuthForm({
           <BrandLogo />
         </Link>
         <div className="auth-intro">
-          <span className="eyebrow">HÀNH TRÌNH CỦA RIÊNG BẠN</span>
+          
           <h1>
             Hiểu kỹ năng.
             <br />

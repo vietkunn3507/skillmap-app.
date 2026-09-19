@@ -7,11 +7,11 @@ files = []
 for name in ("src", "public", "scripts", "deploy", "tests"):
     files.extend(p for p in (root / name).rglob("*") if p.is_file()
                  and "__pycache__" not in p.parts and not p.name.startswith(".env"))
-for name in ("package.json", "pnpm-lock.yaml", "next.config.ts", "next-env.d.ts", "tsconfig.json",
+for name in ("package.json", "pnpm-lock.yaml", "pnpm-workspace.yaml", "next.config.ts", "next-env.d.ts", "tsconfig.json",
              "postcss.config.mjs", "Dockerfile", ".dockerignore", ".gitignore", "render.yaml", "README.md", "Start-SkillMAP.cmd"):
     if (root / name).exists():
         files.append(root / name)
-for name in ("huong-dan-dua-skillmap-len-web.md", "idea-feature-audit.md"):
+for name in ("huong-dan-dua-skillmap-len-web.md", "idea-feature-audit.md", "kich-ban-demo-phat-trien-nguon-nhan-luc.md"):
     files.append(root / "outputs" / name)
 destination = root / "outputs" / "skillmap-deploy.zip"
 with zipfile.ZipFile(destination, "w", zipfile.ZIP_DEFLATED) as archive:

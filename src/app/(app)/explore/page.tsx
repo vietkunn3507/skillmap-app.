@@ -50,7 +50,7 @@ function ExploreContent() {
     <div className="stack">
       <IntelligenceLinks/>
       <section className="greeting">
-        <span className="eyebrow">KHÁM PHÁ CƠ HỘI</span>
+        
         <h1>Khám phá nghề & thị trường</h1>
       </section>
       <div className="search-row">
@@ -156,8 +156,7 @@ function ExploreContent() {
             subtitle="Tin tuyển dụng từ bộ dữ liệu TopCV"
           />
           <p className="source">
-            Tìm kiếm chỉ áp dụng cho 12 tin trên trang đang tải. Bộ lọc ngành và
-            năm áp dụng trên máy chủ.
+            Tìm kiếm trong 12 tin trên trang này.
           </p>
           <DataState {...jobs} empty={list.length === 0}>
             <div className="job-grid">
@@ -220,7 +219,7 @@ function ExploreContent() {
                   const planned = profile.plan.includes(skill.skill_display);
                   return (
                     <div
-                      className="skill-row"
+                      className="skill-row popular-skill-row"
                       key={formatSkillLabel(skill.skill_display)}
                     >
                       <div>
@@ -230,6 +229,7 @@ function ExploreContent() {
                       <button
                         className="chip"
                         aria-label={`Lưu kỹ năng ${formatSkillLabel(skill.skill_display)}`}
+                        aria-pressed={profile.savedSkills.includes(skill.skill_display)}
                         onClick={() =>
                           update({
                             savedSkills: profile.savedSkills.includes(

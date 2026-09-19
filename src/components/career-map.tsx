@@ -10,7 +10,7 @@ export function CareerMap({name,nodes,skills,onSelect,interactive=false,missingS
  const next=missingSkill?normalizeEntity(missingSkill,"skill")?.label:undefined;
  const owned=visibleSkills(skills).filter(s=>!next||skillKey(s)!==skillKey(next)).slice(0,3);
  return <section className="career-map career-constellation" aria-label="Bản đồ nghề nghiệp cá nhân">
-  <header className="constellation-heading"><div><span>BẢN ĐỒ CỦA BẠN</span><h2>Mỗi kỹ năng, một hướng đi.</h2></div><ArrowUpRight size={20} aria-hidden="true"/></header>
+  <header className="constellation-heading"><div><h2>Bản đồ nghề nghiệp của bạn</h2></div><ArrowUpRight size={20} aria-hidden="true"/></header>
   <div className="constellation-viewport"><div className="constellation-scene" style={{transform:`scale(${zoom})`}}>
    <div className="constellation-halo" aria-hidden="true"/>
    <svg className="constellation-lines" viewBox="0 0 100 100" preserveAspectRatio="none" aria-hidden="true">

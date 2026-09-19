@@ -2,7 +2,7 @@ import { currentSession, sameOrigin } from "@/server/session";
 import { getProfile } from "@/server/profiles";
 import { generateGemini, geminiConfigured } from "@/server/mapi-gemini";
 import type { MapiContext } from "@/lib/mapi";
-import { answerWithLlm } from "@/server/mapi-llm";
+import { answerWithLlm, validHistory, type MapiHistoryTurn } from "@/server/mapi-llm";
 export const runtime = "nodejs";
 const requests = new Map<
   string,
@@ -26,28 +26,21 @@ export async function POST(request: Request) {
   for (const [id, value] of requests)
     if (!value.active && now - value.since > 600000) requests.delete(id);
   let question: string, context: MapiContext | undefined;
-  let history: string[] = [];
+  let history: MapiHistoryTurn[] = [];
   try {
     const raw = await request.text();
-    if (raw.length > 6000) throw Error();
+    if (raw.length > 65000) throw Error();
     const body = JSON.parse(raw);
     if (
       typeof body.question !== "string" ||
       !body.question.trim() ||
-      body.question.length > 600
+      body.question.length > 2000
     )
       throw Error();
     question = body.question.trim();
     if (body.history !== undefined) {
-      if (
-        !Array.isArray(body.history) ||
-        body.history.length > 4 ||
-        body.history.some(
-          (q: unknown) => typeof q !== "string" || !q.trim() || q.length > 600,
-        )
-      )
-        throw Error();
-      history = body.history.map((q: string) => q.trim());
+      if (!validHistory(body.history)) throw Error();
+      history = body.history;
     }
     if (body.context) {
       const c = body.context;
@@ -80,7 +73,7 @@ export async function POST(request: Request) {
   const origin = (
     process.env.NEXT_PUBLIC_API_URL || "http://localhost:8000"
   ).replace(/\/$/, "");
-  const signal = AbortSignal.any([request.signal, AbortSignal.timeout(90000)]);
+  const signal = AbortSignal.any([request.signal, AbortSignal.timeout(120000)]);
   async function read<T>(path: string, body?: unknown): Promise<T> {
     const r = await fetch(origin + "/api" + path, {
       method: body ? "POST" : "GET",
