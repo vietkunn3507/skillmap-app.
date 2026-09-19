@@ -55,8 +55,8 @@ def growth(industry: str, start: int = Query(2023, ge=2000, le=2100), end: int =
         "source": "TopCV · skill_trend_yearly",
         "method": "change_pp = share_pct cuối kỳ − đầu kỳ. Chỉ so sánh kỹ năng có quan sát ở cả hai năm; "
                   "không điền 0 cho dữ liệu thiếu. significant = kiểm định chi-square (Fisher khi kỳ vọng "
-                  "< 5) đạt p < 0.05; change_pp ở kỹ năng không đạt ý nghĩa nên xem là dao động ngẫu nhiên, "
-                  "không phải xu hướng thật."}
+                  "< 5) đạt p < 0.05. Không đạt ngưỡng nghĩa là chưa đủ bằng chứng thống kê, "
+                  "không chứng minh không có thay đổi. Kiểm định thăm dò, chưa hiệu chỉnh đa kiểm định; mẫu tin không đại diện toàn thị trường."}
 
 @router.get("/intelligence/occupations")
 def occupations(industry: str):
