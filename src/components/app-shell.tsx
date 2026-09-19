@@ -8,6 +8,7 @@ import { useProfile } from "./profile-provider";
 import { Mapi } from "./mapi/mascot";
 import { Sheet } from "./ui";
 import { authClient } from "@/lib/auth-client";
+import { demoNotifications } from "@/data/demo-notifications";
 const tabs = [
   { href: "/dashboard", name: "Trang chủ", icon: Home },
   { href: "/explore", name: "Khám phá", icon: Search },
@@ -19,6 +20,8 @@ export function AppShell({ children }: { children: ReactNode }) {
   const path = usePathname();
   const { profile, saving } = useProfile();
   const [notice, setNotice] = useState(false);
+  const [readNotices, setReadNotices] = useState<string[]>([]);
+  const unread = profile.demo ? demoNotifications.filter(item => !readNotices.includes(item.id)).length : 0;
   return (
     <>
       <a className="skip-link" href="#main">
@@ -35,11 +38,13 @@ export function AppShell({ children }: { children: ReactNode }) {
             )}
             {saving && <span className="save-status">Đang lưu…</span>}
             <button
-              className="icon-button"
+              className="icon-button notification-trigger"
               aria-label="Thông báo"
+              aria-expanded={notice}
               onClick={() => setNotice(true)}
             >
               <Bell size={20} />
+              {unread > 0 && <span className="notification-count" aria-label={`${unread} thông báo chưa đọc`}>{unread}</span>}
             </button>
             <Link className="avatar" href="/profile" aria-label="Mở hồ sơ">
               {profile.name ? (
@@ -110,6 +115,24 @@ export function AppShell({ children }: { children: ReactNode }) {
       </nav>
       {notice && (
         <Sheet title="Thông báo" onClose={() => setNotice(false)}>
+          {profile.demo ? <>
+            <div className="notification-toolbar">
+              <span className="badge">Thông báo demo</span>
+              <button className="text-link" disabled={unread === 0} onClick={() => setReadNotices(demoNotifications.map(item => item.id))}>Đánh dấu tất cả đã đọc</button>
+            </div>
+            <div className="notification-list">
+              {demoNotifications.map(item => {
+                const read = readNotices.includes(item.id);
+                return <Link key={item.id} href={item.href} className={`notification-item${read ? " is-read" : ""}`} onClick={() => {
+                  setReadNotices(previous => previous.includes(item.id) ? previous : [...previous, item.id]);
+                  setNotice(false);
+                }}>
+                  <div className="notification-title"><h3>{item.title}</h3><small>{read ? "Đã đọc" : "Mới"}</small></div>
+                  <p>{item.body}</p><span className="text-link">{item.action} →</span>
+                </Link>;
+              })}
+            </div>
+          </> : <>
           <div className="state">
             <Bell />
             <h3>Bạn đã cập nhật mọi thứ</h3>
@@ -125,6 +148,7 @@ export function AppShell({ children }: { children: ReactNode }) {
               Xem lộ trình
             </Link>
           </div>
+          </>}
         </Sheet>
       )}
     </>
